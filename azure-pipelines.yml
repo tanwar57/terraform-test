@@ -23,7 +23,7 @@ variables:
 
 stages:
   - stage: Create_Files
-    display_Name: Create required .tf files
+    displayName: Create required .tf files
     jobs:  
     - job: Create_Terraform_Files
       displayName: Create .tf files
