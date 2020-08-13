@@ -1,0 +1,62 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+parameters:
+  - name: location
+    displayName: Select Location
+    type: string
+    default: westus
+    values:
+    - westus
+    - westeurope
+    - eastus
+variables:
+  - name: vmImageName
+    value: 'windows-latest'
+  - name: env
+    value: 'dev'
+
+stages:
+  - stage: Create_Files
+    display_Name: Create required .tf files
+    jobs:  
+    - job: Create_Terraform_Files
+      displayName: Create .tf files
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+      - task: file-creator@5
+        inputs:
+          fileoverwrite: true
+          skipempty: true
+          filepath: '$(env)-tf.tfvars'
+          filecontent: |
+            env = "$(env)"
+            location = "${{ parameters.location }}"
+          endWithNewLine: true
+      - task: file-creator@5
+        inputs:
+          fileoverwrite: true
+          skipempty: true
+          filepath: 'env/$(env)/bootstrap/backend.tf'
+          filecontent: |
+            terraform {
+              backend "azurerm" {
+                resource_group_name  = "$(env)-backend-tf-rg"
+                storage_account_name = "$(env)tfbackend"
+                container_name       = "state-terraform"
+                key                  = "$(env)/${{ parameters.location }}/bootstrap-terraform.tfstate"
+              }
+            }
+          endWithNewLine: true
+      - task: CopyFiles@2
+        displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+        inputs:
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: drop'
