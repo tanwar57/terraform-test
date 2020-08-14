@@ -1,5 +1,5 @@
 module "subnet" {
-	source			= "../modules/subnet"
+	source			= "../../../tf_modules/subnet"
 	subnet 			= [
 	{
 	  name			= "subnet1"

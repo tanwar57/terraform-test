@@ -1,5 +1,5 @@
 module "resource_group" {
-	source		    = "../modules/resource_group"
+	source		    = "../../../tf_modules/resource_group"
 	resource_group  = [
 	{
 	  name		    = "testresourcenet57"

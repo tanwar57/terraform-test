@@ -1,5 +1,5 @@
 module "vnet" {
-	source		   = "../modules/vnet/"
+	source		   = "../../../tf_modules/vnet/"
 	vnet      	   = [
 	{
 	  name		   = "mytestvnet"
