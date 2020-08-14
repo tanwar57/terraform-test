@@ -47,10 +47,26 @@ stages:
           filecontent: |
             terraform {
               backend "azurerm" {
-                resource_group_name  = "$(env)-backend-tf-rg"
-                storage_account_name = "$(env)tfbackend"
-                container_name       = "state-terraform"
+                resource_group_name  = "$(env)-backendravtf-rg"
+                storage_account_name = "$(env)tfbackendrav"
+                container_name       = "state-terraformrav"
                 key                  = "$(env)/${{ parameters.location }}/bootstrap-terraform.tfstate"
+              }
+            }
+          endWithNewLine: true
+      - task: file-creator@5
+        inputs:
+          fileoverwrite: true
+          skipempty: true
+          filepath: 'env/$(env)/bootstrap/bootstrap_state.tf'
+          filecontent: |
+            data "terraform_remote_state" "state" {
+              backend                             =  "azurerm"
+              config                              =  {
+                resource_group_name               =  "$(env)-backendravtf-rg"
+                storage_account_name              =  "$(env)tfbackendrav"
+                container_name                    =  "state-terraformrav"
+                key                               =  "$(env)/${{ parameters.location }}/bootstrap-terraform.tfstate"
               }
             }
           endWithNewLine: true
